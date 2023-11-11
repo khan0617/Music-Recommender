@@ -1,8 +1,12 @@
 import os
 import spotipy
-import json
+import logging
 from spotipy.oauth2 import SpotifyClientCredentials
 from song import Song
+from logging_config import setup_logging
+
+setup_logging()
+logger = logging.getLogger(__name__)
 
 class SpotifyManager:
     def __init__(self) -> None:
@@ -29,13 +33,22 @@ class SpotifyManager:
         return spotify
     
     def _search_track_features(self, track_uri: str) -> list | None:
+        """
+        Return a list of audio features of this track, such as valence, acousticness, etc...
+        Returns None on failure.
+        """
         # audio_features should be a list of dicts. Since we're only searching for 1 track, we only need the first list entry.
         audio_features: list | None = self.sp.audio_features(tracks=[track_uri])
-        print(f'{type(audio_features) = }, {json.dumps(audio_features, indent=4)}\n\n')
+        if not audio_features:
+            return None
         return audio_features[0]
 
     
     def search_song(self, song_name: str) -> Song | None:
+        """
+        Try to search for song_name using the spotify API. 
+        Returns a populated Song object or None on failure.
+        """
         results = self.sp.search(q=song_name, limit=1, type='track')
         if not results:
             return None
@@ -45,14 +58,10 @@ class SpotifyManager:
             return None
         
         song = Song.from_dict_and_features(results, features)
+        logger.info(f'search_song(), created song object: {song}')
         return song
     
 if __name__ == '__main__':
     spotify_manager = SpotifyManager()
     song_name = 'Forever Young Blackpink'
     song = spotify_manager.search_song(song_name=song_name)
-    print(f'{type(song) = }')
-    print(f'results for {song_name = }, {song} ')
-    # with open('example_song_search.json', 'w') as f:
-    #     json.dump(results, f, indent=4)
-    # print(json.dumps(results, indent=4))
