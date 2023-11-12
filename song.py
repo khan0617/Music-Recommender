@@ -85,3 +85,6 @@ class Song:
         feature_values = [song_as_dict[feature] for feature in feature_names]
         return feature_values
     
+    def to_dict(self) -> dict:
+        return asdict(self)
+    
