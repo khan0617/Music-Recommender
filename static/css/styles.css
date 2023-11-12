@@ -1,0 +1,91 @@
+body {
+    background: linear-gradient(135deg, #4300ff 0%, #717371 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-family: 'Proxima Nova', sans-serif;
+    letter-spacing: -0.04em;
+}
+
+/* Adjust the top margin or padding of the main container */
+.main-container {
+    margin-top: 0px;
+}
+
+/* Styling for the placeholder recommendation text */
+#recommendations > div{
+    color: white;
+    font-weight: bolder;
+}
+
+.default-text-header {
+    font-size: 2em;
+}
+
+.default-text-footer {
+    font-size: 1.25em;
+}
+
+.main-header {
+    font-size: 5em;
+    font-weight: bolder;
+}
+
+/* Custom styles for dark-themed search bar */
+.bg-dark {
+    background-color: #343a40; /* Dark background color */
+}
+
+.border-dark {
+    border-color: #343a40; /* Dark border color */
+}
+
+/* Adjust the magnifying glass icon size and color if needed */
+.material-symbols-outlined {
+    font-size: 24px;
+    color: gray;
+}
+
+/* Custom styles for the search bar and suggestions */
+.search-container {
+    max-width: 600px; /* Adjust this value as needed */
+}
+
+/* Styles for the suggestions container */
+#suggestionsContainer {
+    position: absolute; /* Position relative to the search bar */
+    z-index: 1000; /* Ensure it's above other content */
+    width: calc(100% - 48px); /* Match the width of the search input */
+    background-color: #343a40; /* Same background color as the search bar */
+    border: 1px solid #343a40; /* Border to match the search bar */
+    border-top: none; /* Remove top border to seamlessly connect with the search bar */
+    margin-top: -1px; /* Align perfectly with the bottom of the search bar */
+    border-radius: 0 0 0.25rem 0.25rem; /* Rounded corners at the bottom */
+    max-height: 300px; /* Limit the height of the dropdown */
+    max-width: 600px;
+    overflow-y: auto; /* Scrollable if many suggestions */
+}
+
+/* Styles for individual suggestion items */
+.suggestion-item {
+    padding: 10px;
+    color: white;
+    cursor: pointer;
+}
+
+.suggestion-item:hover {
+    background-color: #4a4a4a;
+}
+
+
+/* Change the background color of inputs on Chrome autofill */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px #24282c inset !important; /* Match your input field's background color */
+    -webkit-text-fill-color: white !important; /* Match your input field's text color */
+}
+
