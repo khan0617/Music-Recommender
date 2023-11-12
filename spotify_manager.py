@@ -9,8 +9,9 @@ setup_logging()
 logger = logging.getLogger(__name__)
 
 class SpotifyManager:
+    """Class to manage song searchh queries"""
     def __init__(self) -> None:
-        self.sp = self._get_spotify_api_client()
+        self._sp = self._get_spotify_api_client()
 
     @staticmethod
     def _load_spotify_credentials(filename: str) -> tuple[str, str]:
@@ -38,18 +39,17 @@ class SpotifyManager:
         Returns None on failure.
         """
         # audio_features should be a list of dicts. Since we're only searching for 1 track, we only need the first list entry.
-        audio_features: list | None = self.sp.audio_features(tracks=[track_uri])
+        audio_features: list | None = self._sp.audio_features(tracks=[track_uri])
         if not audio_features:
             return None
         return audio_features[0]
-
     
     def search_song(self, song_name: str) -> Song | None:
         """
         Try to search for song_name using the spotify API. 
         Returns a populated Song object or None on failure.
         """
-        results = self.sp.search(q=song_name, limit=1, type='track')
+        results = self._sp.search(q=song_name, limit=1, type='track')
         if not results:
             return None
         
@@ -63,5 +63,5 @@ class SpotifyManager:
     
 if __name__ == '__main__':
     spotify_manager = SpotifyManager()
-    song_name = 'Forever Young Blackpink'
-    song = spotify_manager.search_song(song_name=song_name)
+    name = 'Forever Young Blackpink'
+    song = spotify_manager.search_song(song_name=name)

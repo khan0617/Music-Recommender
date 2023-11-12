@@ -11,10 +11,11 @@ function fetchAutocompleteSuggestions() {
         clearSuggestions();
         return;
     }
+    // The server will return html we can insert directly into the DOM
     fetch('/autocomplete?prefix=' + encodeURIComponent(inputVal))
-        .then(response => response.json())
-        .then(data => {
-            displaySuggestions(data);
+        .then(response => response.text())  // Expect a text (HTML) response
+        .then(html => {
+            document.getElementById('suggestionsContainer').innerHTML = html;
         })
         .catch(error => console.error('Error fetching autocomplete suggestions:', error));
 }

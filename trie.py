@@ -2,6 +2,7 @@
 # this allows us to provide a sort of autocomplete in the web interface.
 from __future__ import annotations
 import logging
+import ast
 import pandas as pd
 import numpy as np
 from sklearn.utils import shuffle
@@ -22,23 +23,35 @@ class Trie:
         self.root = TrieNode()
 
     @classmethod
-    def from_list_of_names(cls, song_names: pd.DataFrame | pd.Series, sample_frac: float | None = None) -> Trie:
+    def from_list_of_names(cls, songs_df: pd.DataFrame, sample_frac: float | None = None) -> Trie:
         """
-        Create and initialize a Trie using a dataframe of a list of song names.
-        Randomly sample a percentage of names if we don't want a Trie of 170,000 items.
+        Create and initialize a Trie using a dataframe of song and artist names.
+        We'll concatenate the names: {Song name} by {artist}, like: "Forever Young by BLACKPINK".
+
+        Args:
+            songs_df (pd.Dataframe): A dataframe where data["name"] is a column of str 
+                and data["artists"] is a column of list[str].
+            sanple_frac (float | None): allows randomly sampling a percentage of names 
+                if we don't want a Trie of 170,000 items. Default is None, or full df size.
         """
         trie = cls()
         # sample a fraction of the names to help save memory
         if sample_frac is not None:
-            song_names = song_names.sample(frac=sample_frac)
+            songs_df = songs_df.sample(frac=sample_frac)
 
         # randomize the insertions into the tree for more interesting search results
-        song_names = song_names.sample(frac=1).reset_index(drop=True)
+        songs_df = songs_df.sample(frac=1).reset_index(drop=True)
 
-        for song_name in song_names:
-            trie.insert(str(song_name))
+        for _, row in songs_df.iterrows():
+            # try to insert {song} by {artist}. If no artist, then insert just the song name.
+            track_name = row['name']
+            artist_list = ast.literal_eval(row['artists'])
+            if artist_list:
+                trie.insert(f"{track_name} by {artist_list[0]}")
+            else:
+                trie.insert(track_name)
 
-        logging.info(f'Created Trie, inserted {len(song_names)} song names')
+        logging.info(f'Created Trie, inserted {len(songs_df)} song-artist combinations')
         return trie
 
     def insert(self, word: str) -> None:
@@ -97,5 +110,5 @@ class Trie:
 # test out the Trie
 if __name__ == '__main__':
     df = pd.read_csv('./data/data.csv')
-    trie = Trie.from_list_of_names(df['name'])
+    trie = Trie.from_list_of_names(df[['name', 'artists']])
     print(f'{trie.get_autocomplete_suggestions("lovesick") = }')

@@ -29,6 +29,7 @@ body {
 }
 
 .main-header {
+    color: white;
     font-size: 5em;
     font-weight: bolder;
 }
