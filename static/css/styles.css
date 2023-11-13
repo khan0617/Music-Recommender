@@ -95,7 +95,7 @@ input:-webkit-autofill:active {
 /* Styling for the song recommendation components (with album art etc.) */
 /* The song the user searched for */
 .main-song-component {
-    max-width: 30%;
+    max-width: 25%;
 }
 
 .song-style {
@@ -107,10 +107,17 @@ input:-webkit-autofill:active {
 }
 
 .album-art {
-    margin-bottom: 5px;
-    width: 100%; /* Make the image responsive */
+    margin-bottom: 10px;
+    width: 100%;
     border-radius: 8px;
+    transition: transform 0.15s ease; /* Add transition for smooth scaling */
 }
+
+/* hover effect for recommendation images */
+.album-art:hover {
+    transform: scale(1.1); /* Scale up the image slightly on hover */
+}
+
 
 .song-link {
     color: #fff;
@@ -156,4 +163,18 @@ input:-webkit-autofill:active {
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
+}
+
+/* Footer styles */
+.footer {
+    color: white;
+}
+
+.social-link {
+    margin: 0 15px;
+}
+
+/* Change fill color of SVG on hover */
+.social-link:hover svg {
+    fill: rgb(168, 168, 168);
 }

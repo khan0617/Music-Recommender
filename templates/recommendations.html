@@ -9,6 +9,7 @@
     </div>
 
     <!-- Recommendations -->
+    <h2>Recommendations</h2>
     <div class="row" id="recommendationsRow">
         {% for song in recommendations %}
         <div class="col">
@@ -21,7 +22,7 @@
         </div>
         {% endfor %}
     </div>
-    <div class="text-center mt-4">
+    <div class="text-center m-3">
         <button id="clearButton" class="btn-spotify-clear" onclick="clearRecommendations()">Clear</button>
     </div>
     {% else %}
