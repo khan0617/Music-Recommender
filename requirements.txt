@@ -1,0 +1,9 @@
+flask
+scikit-learn
+pandas
+numpy
+spotipy
+matplotlib
+seaborn
+plotly
+yellowbrick
