@@ -25,7 +25,7 @@ document.getElementById('searchInput').addEventListener('focusout', (event) => {
         if (!document.getElementById('searchInput').matches(':focus')) {
             clearSuggestions();
         }
-    }, 100); // Adjust the delay as needed
+    }, 250); // Adjust the delay as needed
 });
 
 // let autocomplete suggestions area scale dynamically with the search bar and page
@@ -47,7 +47,7 @@ function getRecommendations(songQuery, fromAutocomplete = false) {
         if (fromAutocomplete) {
             url += '&fromAutocomplete=true';
         }
-
+        letUserKnowWeAreSearchingForRecs();
         fetch(url)
             .then(response => response.text())  // Parse the response as text (HTML)
             .then(html => {
@@ -56,6 +56,31 @@ function getRecommendations(songQuery, fromAutocomplete = false) {
             })
             .catch(error => console.error('Error searching song:', error));
     }
+}
+
+// let the user know we're searching for recommendations.
+function letUserKnowWeAreSearchingForRecs() {
+    document.getElementById('recommendations').innerHTML = `<div class="default-text-header">Finding your recommendations...</div>`;
+}
+
+function clearRecommendations() {
+    const recommendationsDiv = document.getElementById('recommendations');
+    recommendationsDiv.classList.add('fade-out');
+
+    // Clear content after the fade-out animation duration (500 ms here)
+    setTimeout(() => {
+        recommendationsDiv.innerHTML = 
+            `
+            <svg class="mb-3" xmlns="http://www.w3.org/2000/svg" height="72" viewBox="0 -960 960 960" width="72" fill="white">
+                <path d="M400-120q-66 0-113-47t-47-113q0-66 47-113t113-47q23 0 42.5 5.5T480-418v-422h240v160H560v400q0 66-47 113t-113 47Z"/>
+            </svg>
+            <div class="default-text-header">Similar songs will appear here for you</div>
+            <div class="default-text-footer">Get started by searching for a song you like.</div>
+            `;
+        recommendationsDiv.classList.remove('fade-out'); // Remove the class to reset for next time
+    }, 300); // Match this with the CSS animation duration
+
+    document.getElementById('searchInput').value = '';
 }
 
 

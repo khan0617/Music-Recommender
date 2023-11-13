@@ -1,7 +1,7 @@
 <div class="container">
     <!-- The song the user searched for -->
     {% if main_song %}
-    <div class="song-style main-song-component mb-5">
+    <div class="song-style fade-in main-song-component mb-5">
         <a href="{{ main_song.album_url }}" target="_blank">
             <img class="img-fluid album-art" src="{{ main_song.image_url }}" alt="album art">
         </a>
@@ -12,7 +12,7 @@
     <div class="row" id="recommendationsRow">
         {% for song in recommendations %}
         <div class="col">
-            <div class="song-style">
+            <div class="song-style fade-in">
                 <a href="{{ song.album_url }}" target="_blank">
                     <img class="img-fluid album-art" src="{{ song.image_url }}" alt="album art">
                 </a>
@@ -20,6 +20,9 @@
             </div>
         </div>
         {% endfor %}
+    </div>
+    <div class="text-center mt-4">
+        <button id="clearButton" class="btn-spotify-clear" onclick="clearRecommendations()">Clear</button>
     </div>
     {% else %}
     <!-- Default placeholder content -->
