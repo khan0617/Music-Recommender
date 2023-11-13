@@ -122,3 +122,38 @@ input:-webkit-autofill:active {
     color: #1DB954;
     text-decoration: underline;
 }
+
+/* button to clear the recommendations and the input field */
+.btn-spotify-clear {
+    background-color: #b91d1d;
+    color: white;
+    border-radius: 20px;
+    padding: 10px 20px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-spotify-clear:hover {
+    background-color: #d62222;
+}
+
+/* animations for deleting and showing the recommendations components */
+.fade-out {
+    animation: fadeOut 0.3s ease-in-out forwards; /* Adjust duration as needed */
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease-in-out forwards; /* Adjust duration as needed */
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}

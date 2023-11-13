@@ -62,7 +62,7 @@ def recommendations():
     print(f'recommendations({query=}, {artist_name=}) called!')
 
     if query and (song := spotify_manager.search_song(song_name=query, artist_name=artist_name)):
-        recommendations: list[Song] = recommendations_manager.get_recommendations(song, num_recommendations=10)
+        recommendations: list[Song] = recommendations_manager.get_recommendations(song, num_recommendations=10)[:5]
         app.logger.info(f'recommendations({query=}, {artist_name=}), found {len(recommendations)} recommendations!')
         return render_template('recommendations.html', main_song=song, recommendations=recommendations)
     
