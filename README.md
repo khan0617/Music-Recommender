@@ -6,7 +6,7 @@ A web-interface to search for songs you like, and get up to 5 recommendations. T
 
 # Before Starting
 Important notes:
-1. The system was test developed and tested using python 3.11 on Windows.
+1. The system was developed and tested using python 3.11 on Windows.
 2. You will need to provide your own Spotify API login credentials
     - Go to https://developer.spotify.com/documentation/web-api, and get your `client_id` and `client_secret`. You can set the redirect url to `http://localhost/`
     - Create `spotify_credentials.txt` in the same folder as `spotify_manager.py`. The file should be a single line formatted as such: `client_id client_secret` (separated by a space). `SpotifyManager` reads these and loads them into `os.environ`.
