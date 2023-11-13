@@ -51,11 +51,13 @@ class SpotifyManager:
         """
         query = f'{song_name} {artist_name}' if artist_name is not None else song_name
         results = self._sp.search(q=query, limit=1, type='track')
-        if not results:
+        if not results or not results['tracks']['items']:
+            logger.warning(f'search_song({song_name=}): did not get any results!')
             return None
         
         features = self._search_track_features(results['tracks']['items'][0]['uri'])
         if not features:
+            logger.warning(f'search_song({song_name=}): did not get song features!')
             return None
         
         song = Song.from_dict_and_features(results, features)
@@ -65,5 +67,6 @@ class SpotifyManager:
 # Try it out, test code.
 if __name__ == '__main__':
     spotify_manager = SpotifyManager()
+    # here's a query that won't work: ASD,A;SDQADXXC
     name = 'Forever Young Blackpink'
     song = spotify_manager.search_song(song_name=name)
