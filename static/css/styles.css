@@ -110,12 +110,14 @@ input:-webkit-autofill:active {
     margin-bottom: 10px;
     width: 100%;
     border-radius: 8px;
-    transition: transform 0.15s ease; /* Add transition for smooth scaling */
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* More visible shadow */
 }
 
 /* hover effect for recommendation images */
 .album-art:hover {
-    transform: scale(1.1); /* Scale up the image slightly on hover */
+    transform: scale(1.07); /* Slightly larger on hover */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4); /* Even more pronounced shadow on hover */
 }
 
 
