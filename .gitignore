@@ -1,6 +1,7 @@
 *.pyc
 __pycache__/
 spotify_credentials.txt
+genres.txt
 *.cache
 *.json
 *.log

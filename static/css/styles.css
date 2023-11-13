@@ -12,6 +12,7 @@ body {
 /* Adjust the top margin or padding of the main container */
 .main-container {
     margin-top: 0px;
+    text-align: center;
 }
 
 /* Styling for the placeholder recommendation text */
@@ -51,7 +52,8 @@ body {
 
 /* Custom styles for the search bar and suggestions */
 .search-container {
-    max-width: 600px; /* Adjust this value as needed */
+    width: 100%;
+    max-width: 600px;
 }
 
 /* Styles for the suggestions container */
@@ -90,3 +92,33 @@ input:-webkit-autofill:active {
     -webkit-text-fill-color: white !important; /* Match your input field's text color */
 }
 
+/* Styling for the song recommendation components (with album art etc.) */
+/* The song the user searched for */
+.main-song-component {
+    max-width: 30%;
+}
+
+.song-style {
+    /* Uncomment to add a dark border around the image components. */
+    /* background-color: #212428; */
+    padding: 15px 15px 5px 15px;
+    border-radius: 8px;
+    display: inline-block; /* Make the component inline-block */
+}
+
+.album-art {
+    margin-bottom: 5px;
+    width: 100%; /* Make the image responsive */
+    border-radius: 8px;
+}
+
+.song-link {
+    color: #fff;
+    font-size: 1.2em;
+    text-decoration: none;
+}
+
+.song-link:hover, .song-link:focus {
+    color: #1DB954;
+    text-decoration: underline;
+}
