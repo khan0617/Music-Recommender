@@ -9,7 +9,7 @@ setup_logging()
 logger = logging.getLogger(__name__)
 
 class SpotifyManager:
-    """Class to manage song searchh queries"""
+    """Class to manage song search queries."""
     def __init__(self) -> None:
         self._sp = self._get_spotify_api_client()
 
@@ -44,12 +44,13 @@ class SpotifyManager:
             return None
         return audio_features[0]
     
-    def search_song(self, song_name: str) -> Song | None:
+    def search_song(self, song_name: str, artist_name: str | None = None) -> Song | None:
         """
         Try to search for song_name using the spotify API. 
         Returns a populated Song object or None on failure.
         """
-        results = self._sp.search(q=song_name, limit=1, type='track')
+        query = f'{song_name} {artist_name}' if artist_name is not None else song_name
+        results = self._sp.search(q=query, limit=1, type='track')
         if not results:
             return None
         
@@ -58,9 +59,10 @@ class SpotifyManager:
             return None
         
         song = Song.from_dict_and_features(results, features)
-        logger.info(f'search_song(), created song object: {song}')
+        logger.info(f'search_song({query=}), created song object: {song}')
         return song
-    
+
+# Try it out, test code.
 if __name__ == '__main__':
     spotify_manager = SpotifyManager()
     name = 'Forever Young Blackpink'
