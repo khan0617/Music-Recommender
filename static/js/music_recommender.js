@@ -2,18 +2,30 @@
 window.addEventListener('load', adjustSuggestionsWidth);
 window.addEventListener('resize', adjustSuggestionsWidth);
 
-// Initiate a searchSong request when the user hits Enter
+// Initiate a getRecommendations request when the user hits Enter
 document.getElementById('searchInput').addEventListener('keydown', (event) => {
     if (event.code === 'Enter') {
         console.log("we got an enter!");
         event.preventDefault();
-        // Call searchSong function with the input's value if it's non-empty
+        // Call getRecommendations function with the input's value if it's non-empty
         let inputVal = event.target.value;
         if (inputVal.trim()) {
             console.log(`Truthy input value! ${inputVal}`);
-            searchSong(inputVal);
+            getRecommendations(inputVal);
         }
     }
+});
+
+// zero-out the suggestions when input loses focus.
+document.getElementById('searchInput').addEventListener('focusout', (event) => {
+    // there needs to be a delay before we clear the suggestions, because
+    // clicking on a suggestion technically counts as 'focusout'.
+    // so give time for the GET /recommendations to get sent before clearing them.
+    setTimeout(() => {
+        if (!document.getElementById('searchInput').matches(':focus')) {
+            clearSuggestions();
+        }
+    }, 100); // Adjust the delay as needed
 });
 
 // let autocomplete suggestions area scale dynamically with the search bar and page
@@ -23,24 +35,24 @@ function adjustSuggestionsWidth() {
     suggestionsContainer.style.width = inputWidth + 48 + 'px';
 }
 
-// initiate a searchSong request for the specified song.
+// initiate a getRecommendations request for the specified song.
 /**
- * @param {string} songQuery
- * @param {boolean} fromAutocomplete
+ * @param {string} songQuery - The query, like 'Forever Young by BLACKPINK'.
+ * @param {boolean} fromAutocomplete - let the backend know we are looking for a recommendation that is part of the database
  */
-function searchSong(songQuery, fromAutocomplete = false) {
+function getRecommendations(songQuery, fromAutocomplete = false) {
     if (songQuery) {
-        // autocomplete requests will have a "by {artist}" append to the song name.
-        // we can use this information in the search.
-        let url = '/searchSong?query=' + encodeURIComponent(songQuery);
+        console.log(`Called getRecommendations(songQuery=${songQuery}, fromAutocomplete=${fromAutocomplete})!`);
+        let url = '/recommendations?query=' + encodeURIComponent(songQuery);
         if (fromAutocomplete) {
             url += '&fromAutocomplete=true';
         }
 
         fetch(url)
-            .then(response => response.json())  // Parse the JSON response
-            .then(data => {
-                console.log('Search results:', data);
+            .then(response => response.text())  // Parse the response as text (HTML)
+            .then(html => {
+                // Insert the HTML into the recommendations section of the page
+                document.getElementById('recommendations').innerHTML = html;
             })
             .catch(error => console.error('Error searching song:', error));
     }
@@ -48,11 +60,11 @@ function searchSong(songQuery, fromAutocomplete = false) {
 
 
 // Handles the selection of an autocomplete suggestion
-// on click of a suggestion, initiate a searchSong() request.
+// on click of a suggestion, initiate a getRecommendations() request.
 function selectSuggestion(suggestion) {
     document.getElementById('searchInput').value = suggestion;
     clearSuggestions();
-    searchSong(suggestion, fromAutocomplete=true);  // Trigger the search when a suggestion is clicked
+    getRecommendations(suggestion, fromAutocomplete=true);  // Trigger the search when a suggestion is clicked
 }
 
 // Fetches autocomplete suggestions for the search bar
