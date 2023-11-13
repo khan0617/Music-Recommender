@@ -6,10 +6,15 @@ from trie import Trie
 from spotify_manager import SpotifyManager
 
 setup_logging()
+print('**Initializing**')
 data = pd.read_csv('./data/data.csv')
+print('Finished reading data.csv')
 trie = Trie.from_list_of_names(data[['name', 'artists']])
+print('Initialized trie')
 spotify_manager = SpotifyManager()
+print('Initialized spotify_manager')
 app = Flask(__name__)
+print('Music Recommender Flask App Started')
 app.logger.info('Music Recommender Flask App Started')
 
 @app.route('/')
@@ -39,9 +44,19 @@ def search_song():
     """
     response = {}
     query = request.args.get('query', '')
-    if query and (song := spotify_manager.search_song(query)):
+    artist_name = None
+    from_autocomplete = request.args.get('fromAutocomplete', 'false') == 'true'
+
+    # if the request was made with autocomplete, we know the input will be: '{song_name} by {artist}'
+    if from_autocomplete:
+        query, artist_name = query.rsplit('by', 1)
+
+    if query and (song := spotify_manager.search_song(song_name=query, artist_name=artist_name)):
         response = song.to_dict()
-    app.logger.info(f'search_song({query=}), response = {json.dumps(response, indent=4)}')
+
+    msg = f'search_song({query=}, {from_autocomplete=} {artist_name=}), response = {json.dumps(response, indent=4)}'
+    print(msg)
+    app.logger.info(msg)
     return jsonify(response)
 
 if __name__ == '__main__':

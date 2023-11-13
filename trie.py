@@ -31,8 +31,8 @@ class Trie:
         Args:
             songs_df (pd.Dataframe): A dataframe where data["name"] is a column of str 
                 and data["artists"] is a column of list[str].
-            sanple_frac (float | None): allows randomly sampling a percentage of names 
-                if we don't want a Trie of 170,000 items. Default is None, or full df size.
+            sample_frac (float | None): allows randomly sampling a percentage of names 
+                if we don't want a Trie of 170,000 items. Default is None, meaning full df size.
         """
         trie = cls()
         # sample a fraction of the names to help save memory
@@ -47,7 +47,7 @@ class Trie:
             track_name = row['name']
             artist_list = ast.literal_eval(row['artists'])
             if artist_list:
-                trie.insert(f"{track_name} by {artist_list[0]}")
+                trie.insert(f'{track_name} by {artist_list[0]}')
             else:
                 trie.insert(track_name)
 
@@ -70,6 +70,7 @@ class Trie:
     def _search(self, node: TrieNode, limit: int, suggestions: list[str]) -> None:
         """
         Recursively search for autocomplete suggestions based on the given prefix.
+        Populate the suggestions input argument with the results.
 
         Args:
             node (TrieNode): The current node in the Trie.
