@@ -22,9 +22,11 @@ def init() -> None:
     print('Reading data.csv...', end='')
     data = pd.read_csv('./data/data.csv')
     print('Done.\nInitializing trie...', end='')
-    trie = Trie.from_list_of_names(data[['name', 'artists']], sample_frac=0.1)
+    trie = Trie.from_list_of_names(data[['name', 'artists']])
     print('Done.\nInitializing spotify_manager...', end='')
     spotify_manager = SpotifyManager()
+
+    # TODO: create model type enum or baseclass to prevent hard-coded strings
     classifier = 'gpu_knn' if cuda.is_available() else 'knn'
     print(f'Done.\nInitializing recommendations_manager({classifier=})...', end='')
     recommendations_manager = RecommendationsManager(
@@ -60,25 +62,32 @@ def recommendations():
     """
     Return the search recommendations for this song, as an html string.
     Returns empty html string if we don't get any results.
+    An example GET request could look like:
+        "/recommendations?query=your_song_name&gpuEnabled=true&fromAutocomplete=false
     """
     query = request.args.get('query', '')
     artist_name = None
     from_autocomplete = request.args.get('fromAutocomplete', 'false') == 'true'
+    gpu_enabled = request.args.get('gpuEnabled', 'false') == 'true'
+
+    # TODO: create an enum or something so we don't have to use strings here
+    if gpu_enabled and recommendations_manager.classifier != 'gpu_knn':
+        recommendations_manager.classifier = 'gpu_knn'
 
     # if the request was made with autocomplete, we know the input will be: '{song_name} by {artist}'
     if from_autocomplete:
         query, artist_name = query.rsplit('by', 1)
 
-    print(f'recommendations({query=}, {artist_name=}) called!')
+    print(f'recommendations({query=}, {artist_name=}, {gpu_enabled=}) called!')
 
     if query and (song := spotify_manager.search_song(song_name=query, artist_name=artist_name)):
         recommendations: list[Song] = recommendations_manager.get_recommendations(song, num_recommendations=10)[:5]
-        app.logger.info(f'recommendations({query=}, {artist_name=}), found {len(recommendations)} recommendations!')
+        app.logger.info(f'recommendations({query=}, {artist_name=}, {gpu_enabled=}), found {len(recommendations)} recommendations!')
         return render_template('recommendations.html', main_song=song, recommendations=recommendations)
     
-    app.logger.info(f'recommendations({query=}, {artist_name=}), found no recommendations.')
+    app.logger.info(f'recommendations({query=}, {artist_name=}, {gpu_enabled=}), found no recommendations.')
     return render_template('recommendations.html', main_song=None, recommendations=[])
 
 if __name__ == '__main__':
     init()
-    app.run(debug=True)
+    app.run(debug=False)

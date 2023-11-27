@@ -16,6 +16,14 @@ document.getElementById('searchInput').addEventListener('keydown', (event) => {
     }
 });
 
+// add an event listener for the GPU toggle switch
+document.addEventListener('DOMContentLoaded', function() {
+    let gpuToggle = document.getElementById('gpuToggle');
+    gpuToggle.addEventListener('change', function() {
+        handleGPUToggle(gpuToggle);
+    });
+});
+
 // zero-out the suggestions when input loses focus.
 document.getElementById('searchInput').addEventListener('focusout', (event) => {
     // there needs to be a delay before we clear the suggestions, because
@@ -25,8 +33,17 @@ document.getElementById('searchInput').addEventListener('focusout', (event) => {
         if (!document.getElementById('searchInput').matches(':focus')) {
             clearSuggestions();
         }
-    }, 250); // Adjust the delay as needed
+    }, 200);
 });
+
+/**
+ * Update the gpu toggle text depending on the user's selection
+ * @param {HTMLElement} gpuToggle: The toggle switch element controlling GPU usage.
+ */
+function handleGPUToggle(gpuToggle) {
+    let label = document.querySelector('label[for="gpuToggle"]');
+    label.textContent = gpuToggle.checked ? 'GPU Enabled' : 'GPU Disabled';
+}
 
 // let autocomplete suggestions area scale dynamically with the search bar and page
 function adjustSuggestionsWidth() {
@@ -43,7 +60,8 @@ function adjustSuggestionsWidth() {
 function getRecommendations(songQuery, fromAutocomplete = false) {
     if (songQuery) {
         console.log(`Called getRecommendations(songQuery=${songQuery}, fromAutocomplete=${fromAutocomplete})!`);
-        let url = '/recommendations?query=' + encodeURIComponent(songQuery);
+        let gpuEnabled = document.getElementById('gpuToggle').checked; // Get the state of the GPU toggle
+        let url = '/recommendations?query=' + encodeURIComponent(songQuery) + '&gpuEnabled=' + gpuEnabled;
         if (fromAutocomplete) {
             url += '&fromAutocomplete=true';
         }
