@@ -1,6 +1,6 @@
 # Music-Recommender
 ### A similar song finder using KNearestNeighbors, Flask, the Spotify API, and CUDA acceleration.
-A web-interface to search for songs you like, and get up to 5 recommendations. The application forwards your search to Spotify, then uses a custom KNearestNeighbors classifier to retrieve the most similar songs from a local dataset of ~170,000 songs. The recommendations are not constrained to be the same genre as the query. The CUDA acceleration is being actively developed.
+A web-interface to search for songs you like, and get up to 5 recommendations. The application forwards your search to Spotify, then uses a custom KNearestNeighbors classifier to retrieve the most similar songs from a local dataset of ~170,000 songs. The recommendations are not constrained to be the same genre as the query. The CUDA acceleration is being actively developed using [numba](https://numba.pydata.org/).
 
 ![Song Recommender](./music_recommender_screenshot.png)
 
@@ -28,3 +28,14 @@ Important notes:
 - `song_recommender_app.py`: The main flask app. Uses the flask development server to server the application to https://localhost:5000. Prints debug information to the terminal too.
 - `song_recommender_exploration.ipynb`: Exploration of the music dataset. Provides visualizations to understand the data, and tests out various KNN implementations. Useful for seeing how different algorithms or distance metrics can provide different recommendations.
 - `trie.py`: Implements a custom Trie datastructure to implement autocomplete on the web interface. The Trie is loaded with the song names from `data.csv`.
+
+## Resources
+GPU SVG: gpu by Misha Petrishchev from <a href="https://thenounproject.com/browse/icons/term/gpu/" target="_blank" title="gpu Icons">Noun Project</a> (CC BY 3.0)
+
+Music Note SVG: [Google Material Icons](https://fonts.google.com/icons?icon.query=music+note)
+
+LinkedIn SVG: [iconmonstr](https://iconmonstr.com/linkedin-3-svg/)
+
+GitHub SVG: [iconmonstr](https://iconmonstr.com/github-1-svg/)
+
+Favicon: [flaticon](https://www.flaticon.com/free-icon/spotify_3781901)

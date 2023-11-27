@@ -5,3 +5,5 @@ genres.txt
 *.cache
 *.json
 *.log
+myenv/
+myenv/*
