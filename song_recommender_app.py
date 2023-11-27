@@ -1,5 +1,5 @@
-import json
 import pandas as pd
+from numba import cuda
 from flask import Flask, render_template, jsonify, request
 from logging_config import setup_logging
 from trie import Trie
@@ -7,28 +7,38 @@ from spotify_manager import SpotifyManager
 from song import Song
 from recommendations_manager import RecommendationsManager, DATA_FEATURES
 
-setup_logging()
-print('**Initializing**')
-print('Reading data.csv...', end='')
-data = pd.read_csv('./data/data.csv')
-print('Done.\nInitializing trie...', end='')
-trie = Trie.from_list_of_names(data[['name', 'artists']])
-print('Done.\nInitializing spotify_manager...', end='')
-spotify_manager = SpotifyManager()
-print('Done.\nInitializing recommendations_manager...', end='')
-recommendations_manager = RecommendationsManager(
-    data=data, 
-    features=DATA_FEATURES, 
-    spotify_manager=spotify_manager
-)
-print('Done.')
+data: pd.DataFrame
+trie: Trie
+spotify_manager: SpotifyManager
+recommendations_manager: RecommendationsManager
 app = Flask(__name__)
 print('Music Recommender Flask App Started')
 app.logger.info('Music Recommender Flask App Started')
 
+def init() -> None:
+    global data, trie, spotify_manager, recommendations_manager
+    setup_logging()
+    print('**Initializing**')
+    print('Reading data.csv...', end='')
+    data = pd.read_csv('./data/data.csv')
+    print('Done.\nInitializing trie...', end='')
+    trie = Trie.from_list_of_names(data[['name', 'artists']], sample_frac=0.1)
+    print('Done.\nInitializing spotify_manager...', end='')
+    spotify_manager = SpotifyManager()
+    classifier = 'gpu_knn' if cuda.is_available() else 'knn'
+    print(f'Done.\nInitializing recommendations_manager({classifier=})...', end='')
+    recommendations_manager = RecommendationsManager(
+        data=data, 
+        features=DATA_FEATURES, 
+        spotify_manager=spotify_manager,
+        classifier=classifier
+    )
+    print('Done. Good to go!')
+
 @app.route('/')
 def home():
-    return render_template('index.html')
+    cuda_available = cuda.is_available()
+    return render_template('index.html', cuda_available=cuda_available)
 
 @app.route('/autocomplete')
 def autocomplete() -> str:
@@ -70,4 +80,5 @@ def recommendations():
     return render_template('recommendations.html', main_song=None, recommendations=[])
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    init()
+    app.run(debug=True)

@@ -89,7 +89,9 @@ class RecommendationsManager:
         data_copy.loc[len(data_copy.index)] = query.get_features_to_create_df_entry()
         normalized_data = self._normalize_data(data_copy[self.features])
         normalized_query_record: np.ndarray = normalized_data[-1]
-        if self.classifier == 'knn':
+
+        # TODO: add gpu_knn functionality.
+        if self.classifier == 'knn' or self.classifier == 'gpu_knn':
             songs = self._get_knn_results(
                 data_copy=data_copy,
                 normalized_data=normalized_data,

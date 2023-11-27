@@ -35,6 +35,26 @@ body {
     font-weight: bolder;
 }
 
+/* Styling for the GPU toggle switch */
+.gpu-toggle-container {
+    color: white;
+    text-align: center;
+    font-size: 1.2em;
+    font-weight: bold;
+    align-items: center !important;
+}
+
+/* Styling for the GPU toggle switch when checked */
+.gpu-toggle-container .form-check-input:checked {
+    background-color: #198754 !important; /* Bootstrap success color */
+    border-color: #198754 !important;
+}
+
+.gpu-toggle-container .form-check-input:focus {
+    border-color: #198754 !important;
+    box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25) !important;
+}
+
 /* Custom styles for dark-themed search bar */
 .bg-dark {
     background-color: #343a40; /* Dark background color */
