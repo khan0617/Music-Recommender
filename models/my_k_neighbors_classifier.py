@@ -1,9 +1,11 @@
 import numpy as np
 from typing import Any
+from .distance_metric import DistanceMetric
+from .knn_song_classifier import KnnSongClassifier
 
 
-class MyKNeighborsClassifier:
-    def __init__(self, k: int, dist_metric: str = 'euclidean') -> None:
+class MyKNeighborsClassifier(KnnSongClassifier):
+    def __init__(self, k: int, dist_metric: DistanceMetric = DistanceMetric.EUCLIDEAN) -> None:
         self.k = k
         self.dist_metric = dist_metric
         self.X = None
@@ -54,9 +56,9 @@ class MyKNeighborsClassifier:
         Returns:
             - tuple(distances, indices) for the k neighbors for each point.
         """
-        if self.dist_metric == 'euclidean':
+        if self.dist_metric is DistanceMetric.EUCLIDEAN:
             distances = np.array([self._euclidean(query, point) for point in self.X])
-        elif self.dist_metric == 'manhattan':
+        elif self.dist_metric is DistanceMetric.MANHATTAN:
             distances = np.array([self._manhattan(query, point) for point in self.X])
         else:
             raise ValueError(f'Unsupported distance metric: {self.dist_metric}')

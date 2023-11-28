@@ -3,9 +3,13 @@ import logging
 import json
 import numpy as np
 import pandas as pd
+from typing import Type
 from sklearn.preprocessing import MinMaxScaler
 from spotify_manager import SpotifyManager
-from my_k_neighbors_classifier import MyKNeighborsClassifier
+from models.my_k_neighbors_classifier import MyKNeighborsClassifier
+from models.gpu_kneighbors import GpuKNeighbors
+from models.knn_song_classifier import KnnSongClassifier
+from models.distance_metric import DistanceMetric
 from logging_config import setup_logging
 from song import Song
 
@@ -17,16 +21,23 @@ logger = logging.getLogger(__name__)
 
 class RecommendationsManager:
     """Class to handle getting song recommendations given an input song."""
-    def __init__(self, data: pd.DataFrame, features: list[str], spotify_manager: SpotifyManager, classifier: str = 'knn', dist_metric: str = 'euclidean') -> None:
+    def __init__(
+            self, 
+            data: pd.DataFrame, 
+            features: list[str], 
+            spotify_manager: SpotifyManager, 
+            classifier: Type[KnnSongClassifier], 
+            dist_metric: DistanceMetric = DistanceMetric.EUCLIDEAN
+        ) -> None:
         """
         Initialize this RecommendationsManager. Provide the pd.DataFrame, the list of features to use for the classification,
-        the type of classifier, and the distance metric to use with the classifier. SpotifyManager must be passed in
-        to resolve the recommendations' album arts and spotify urls.
+        the type of classifier (unitialized class), and the distance metric to use with the classifier. 
+        An initialized SpotifyManager must be passed to resolve the recommendations' album arts and spotify urls.
         """
         self.data = data
         self.features = features
         self.spotify_manager = spotify_manager
-        self.classifier = classifier
+        self.classifier = classifier # classifier should be uninitialized here.
         self.dist_metric = dist_metric
         
     def _normalize_data(self, numerical_only_data: pd.DataFrame) -> np.ndarray:
@@ -60,13 +71,13 @@ class RecommendationsManager:
                 songs.append(song)
         return songs
     
-    def _get_knn_results(self, data_copy: pd.DataFrame, normalized_data: pd.DataFrame, query: np.ndarray, k: int) -> list[Song]:
+    def _get_classifier_results(self, data_copy: pd.DataFrame, normalized_data: pd.DataFrame, query: np.ndarray, k: int) -> list[Song]:
         """
-        Given a song's acoustic features, run it thorugh knn and get the k recommendations.
+        Given a song's acoustic features, run it thorugh our classifier, and get the k recommendations.
         """
-        knn = MyKNeighborsClassifier(k, self.dist_metric)
-        knn.fit(normalized_data)
-        distances, indices = knn.predict(query)
+        clf = self.classifier(k, self.dist_metric)
+        clf.fit(normalized_data)
+        distances, indices = clf.predict(query)
         recommended_songs = data_copy.iloc[indices]
 
         # debugging console output
@@ -90,9 +101,9 @@ class RecommendationsManager:
         normalized_data = self._normalize_data(data_copy[self.features])
         normalized_query_record: np.ndarray = normalized_data[-1]
 
-        # TODO: add gpu_knn functionality.
-        if self.classifier == 'knn' or self.classifier == 'gpu_knn':
-            songs = self._get_knn_results(
+        # TODO: add gpu_knn functionality and split up this conditional as needed
+        if self.classifier in [MyKNeighborsClassifier, GpuKNeighbors]:
+            songs = self._get_classifier_results(
                 data_copy=data_copy,
                 normalized_data=normalized_data,
                 query=normalized_query_record,

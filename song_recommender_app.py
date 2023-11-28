@@ -2,6 +2,8 @@ import pandas as pd
 from numba import cuda
 from flask import Flask, render_template, jsonify, request
 from logging_config import setup_logging
+from models.gpu_kneighbors import GpuKNeighbors
+from models.my_k_neighbors_classifier import MyKNeighborsClassifier
 from trie import Trie
 from spotify_manager import SpotifyManager
 from song import Song
@@ -26,16 +28,17 @@ def init() -> None:
     print('Done.\nInitializing spotify_manager...', end='')
     spotify_manager = SpotifyManager()
 
-    # TODO: create model type enum or baseclass to prevent hard-coded strings
-    classifier = 'gpu_knn' if cuda.is_available() else 'knn'
-    print(f'Done.\nInitializing recommendations_manager({classifier=})...', end='')
+    # TODO: update this to use the classifier for GPU if available
+    # classifier = GpuKNeighbors if cuda.is_available() else MyKNeighborsClassifier
+    classifier = MyKNeighborsClassifier if cuda.is_available() else MyKNeighborsClassifier
+    print(f'Done.\nInitializing recommendations_manager...', end='')
     recommendations_manager = RecommendationsManager(
         data=data, 
         features=DATA_FEATURES, 
         spotify_manager=spotify_manager,
         classifier=classifier
     )
-    print('Done. Good to go!')
+    print('Done. Go to localhost:5000 to start searching!')
 
 @app.route('/')
 def home():
@@ -70,9 +73,10 @@ def recommendations():
     from_autocomplete = request.args.get('fromAutocomplete', 'false') == 'true'
     gpu_enabled = request.args.get('gpuEnabled', 'false') == 'true'
 
-    # TODO: create an enum or something so we don't have to use strings here
-    if gpu_enabled and recommendations_manager.classifier != 'gpu_knn':
-        recommendations_manager.classifier = 'gpu_knn'
+    if gpu_enabled and type(recommendations_manager.classifier) is not GpuKNeighbors:
+        pass
+        # TODO: uncomment this once GpuKneighbors is done
+        # recommendations_manager.classifier = GpuKNeighbors
 
     # if the request was made with autocomplete, we know the input will be: '{song_name} by {artist}'
     if from_autocomplete:
