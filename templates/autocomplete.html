@@ -1,5 +1,5 @@
 {% for suggestion in suggestions %}
-<div class="suggestion-item" onclick="selectSuggestion('{{ suggestion }}')">
+<div class="suggestion-item" onclick="selectSuggestion(this)">
     {{ suggestion }}
 </div>
 {% endfor %}

@@ -102,13 +102,18 @@ function clearRecommendations() {
 }
 
 
-// Handles the selection of an autocomplete suggestion
-// on click of a suggestion, initiate a getRecommendations() request.
-function selectSuggestion(suggestion) {
+/**
+ * On click of an autocomplete suggestion, initiate a getRecommendations() request.
+ * @param {HTMLElement} element - The clicked suggestion element.
+ */
+function selectSuggestion(element) {
+    var suggestion = element.textContent || element.innerText;
+    console.log(`Called selectSuggestion(suggestion=${suggestion})!`);
     document.getElementById('searchInput').value = suggestion;
     clearSuggestions();
     getRecommendations(suggestion, fromAutocomplete=true);  // Trigger the search when a suggestion is clicked
 }
+
 
 // Fetches autocomplete suggestions for the search bar
 function fetchAutocompleteSuggestions() {
