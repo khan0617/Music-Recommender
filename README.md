@@ -10,7 +10,7 @@ Important notes:
 2. You will need to provide your own Spotify API login credentials
     - Go to https://developer.spotify.com/documentation/web-api, and get your `client_id` and `client_secret`. You can set the redirect url to `http://localhost/`
     - Create `spotify_credentials.txt` in the same folder as `spotify_manager.py`. The file should be a single line formatted as such: `client_id client_secret` (separated by a space). `SpotifyManager` reads these and loads them into `os.environ`.
-3. To get the GPU acceleration toggle functioning, you liekly need to install the [CUDA toolkit](https://developer.nvidia.com/cuda-toolkit) from NVIDIA.
+3. To get the GPU acceleration toggle functioning, you likely need to install the [CUDA toolkit](https://developer.nvidia.com/cuda-toolkit) from NVIDIA.
     - If you prefer to install using conda, you can do: `conda install cuda -c nvidia` (see [Installing CUDA using Conda](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html#conda-installation))
     - Make sure your GPU driver is up to date (via GeForce Experience or NVIDIA directly.)
 
