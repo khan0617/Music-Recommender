@@ -10,12 +10,19 @@ Important notes:
 2. You will need to provide your own Spotify API login credentials
     - Go to https://developer.spotify.com/documentation/web-api, and get your `client_id` and `client_secret`. You can set the redirect url to `http://localhost/`
     - Create `spotify_credentials.txt` in the same folder as `spotify_manager.py`. The file should be a single line formatted as such: `client_id client_secret` (separated by a space). `SpotifyManager` reads these and loads them into `os.environ`.
-    - To get the GPU acceleration toggle functioning, you may need to install the [CUDA toolkit](https://developer.nvidia.com/cuda-toolkit) from NVIDIA.
+3. To get the GPU acceleration toggle functioning, you liekly need to install the [CUDA toolkit](https://developer.nvidia.com/cuda-toolkit) from NVIDIA.
+    - If you prefer to install using conda, you can do: `conda install cuda -c nvidia` (see [Installing CUDA using Conda](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html#conda-installation))
+    - Make sure your GPU driver is up to date (via GeForce Experience or NVIDIA directly.)
+
+#### Using conda, these are the exact steps that worked for me on an RTX 3050Ti Laptop:
+- Download latest GPU driver using GeForce Experience
+- Make a new conda env: `conda create -n music_recommender`
+- Install CUDA toolkit: `conda install cuda -c nvidia`
 
 # Usage
 1. Install dependencies for the flask app and jupyter notebook: `pip install -r requirements.txt`
 2. Launch the Flask app on localhost:5000: `python song_recommender_app.py` (you may need to use `python3` depending on your install).
-    - Application logs are generated in `app.log` in the same directory as`song_recommender_app.py`.
+    - Application logs are generated in `app.log` in the same directory as `song_recommender_app.py`.
 3. Go to http://localhost:5000 in the browser. You should be able to search now!
 
 # Files
