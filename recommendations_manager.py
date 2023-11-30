@@ -3,6 +3,7 @@ import logging
 import json
 import numpy as np
 import pandas as pd
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Type
 from sklearn.preprocessing import MinMaxScaler
 from spotify_manager import SpotifyManager
@@ -58,17 +59,25 @@ class RecommendationsManager:
         seen_songs = set([query_name.lower()])
         print(f'{query_name = }')
         songs: list[Song] = []
-        for index in range(len(recommended_songs)):
-            song_name: str = recommended_songs['name'].iloc[index]
-            artist_name: str = ast.literal_eval(recommended_songs['artists'].iloc[index])[0]
 
-            # avoid duplicate Songs
-            if (lowercase_song_name := song_name.lower()) in seen_songs:
-                continue
-            seen_songs.add(lowercase_song_name)
-            
-            if (song := self.spotify_manager.search_song(song_name, artist_name)) is not None:
-                songs.append(song)
+        # helper function that the concurrent workers will use
+        def get_song_object(song_name: str, artist_name: str):
+            if song_name.lower() in seen_songs:
+                return None
+            seen_songs.add(song_name.lower())
+            return self.spotify_manager.search_song(song_name, artist_name)
+
+        # parallelize the API calls to resolve the songs
+        tasks = [(recommended_songs['name'].iloc[i], ast.literal_eval(recommended_songs['artists'].iloc[i])[0]) 
+                 for i in range(len(recommended_songs))]
+
+        with ThreadPoolExecutor() as executor:
+            future_to_song = {executor.submit(get_song_object, task[0], task[1]): task for task in tasks}
+            for future in as_completed(future_to_song):
+                song = future.result()
+                if song is not None:
+                    songs.append(song)
+
         return songs
     
     def _get_classifier_results(self, data_copy: pd.DataFrame, normalized_data: pd.DataFrame, query: np.ndarray, k: int) -> list[Song]:
