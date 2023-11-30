@@ -59,24 +59,30 @@ class RecommendationsManager:
         seen_songs = set([query_name.lower()])
         print(f'{query_name = }')
         songs: list[Song] = []
+        order_map = {}  # we'll need to maintain order after resolving the futures
 
-        # helper function that the concurrent workers will use
-        def get_song_object(song_name: str, artist_name: str):
+        # helper function that the parallel workers will execute
+        def get_song_object(index: int, song_name: str, artist_name: str):
             if song_name.lower() in seen_songs:
-                return None
+                return None, None
             seen_songs.add(song_name.lower())
-            return self.spotify_manager.search_song(song_name, artist_name)
+            song = self.spotify_manager.search_song(song_name, artist_name)
+            return index, song
 
-        # parallelize the API calls to resolve the songs
-        tasks = [(recommended_songs['name'].iloc[i], ast.literal_eval(recommended_songs['artists'].iloc[i])[0]) 
-                 for i in range(len(recommended_songs))]
-
+        # parallelize the API calls
         with ThreadPoolExecutor() as executor:
-            future_to_song = {executor.submit(get_song_object, task[0], task[1]): task for task in tasks}
-            for future in as_completed(future_to_song):
-                song = future.result()
+            futures = [executor.submit(get_song_object, i, recommended_songs['name'].iloc[i], 
+                                       ast.literal_eval(recommended_songs['artists'].iloc[i])[0]) 
+                       for i in range(len(recommended_songs))]
+
+            for future in as_completed(futures):
+                index, song = future.result()
                 if song is not None:
-                    songs.append(song)
+                    order_map[index] = song
+
+        # build the ordered list of songs
+        for index in sorted(order_map.keys()):
+            songs.append(order_map[index])
 
         return songs
     
