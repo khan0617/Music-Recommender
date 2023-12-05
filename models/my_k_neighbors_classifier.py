@@ -4,14 +4,14 @@ from numba import jit, float64
 from .distance_metric import DistanceMetric
 from .knn_song_classifier import KnnSongClassifier
 
-@jit(float64(float64[:], float64[:]), nopython=True)
+@jit(float64(float64[:], float64[:]), nopython=True, cache=True)
 def _jit_euclidean(query: np.ndarray, point: np.ndarray) -> float:
     """
     Just in time compiled version of euclidean distance calculation.
     """
     return np.sqrt(np.sum((query - point) ** 2))
 
-@jit(float64(float64[:], float64[:]), nopython=True)
+@jit(float64(float64[:], float64[:]), nopython=True, cache=True)
 def _jit_manhattan(query: np.ndarray, point: np.ndarray) -> float:
     """
     Just in time compiled version of manhattan distance calculation.
