@@ -1,15 +1,35 @@
 import numpy as np
 from typing import Any
+from numba import jit, float64
 from .distance_metric import DistanceMetric
 from .knn_song_classifier import KnnSongClassifier
 
+@jit(float64(float64[:], float64[:]), nopython=True)
+def _jit_euclidean(query: np.ndarray, point: np.ndarray) -> float:
+    """
+    Just in time compiled version of euclidean distance calculation.
+    """
+    return np.sqrt(np.sum((query - point) ** 2))
+
+@jit(float64(float64[:], float64[:]), nopython=True)
+def _jit_manhattan(query: np.ndarray, point: np.ndarray) -> float:
+    """
+    Just in time compiled version of manhattan distance calculation.
+    """
+    return np.sum(np.abs(query - point))
 
 class MyKNeighborsClassifier(KnnSongClassifier):
-    def __init__(self, k: int, dist_metric: DistanceMetric = DistanceMetric.EUCLIDEAN) -> None:
+    def __init__(
+        self, 
+        k: int, 
+        dist_metric: DistanceMetric = DistanceMetric.EUCLIDEAN, 
+        jit_compilation: bool = True
+    ) -> None:
         self.k = k
         self.dist_metric = dist_metric
         self.X = None
         self.y = None
+        self.jit_compilation = jit_compilation
 
     @staticmethod
     def _euclidean(query: np.ndarray, point: np.ndarray) -> float:
@@ -57,13 +77,15 @@ class MyKNeighborsClassifier(KnnSongClassifier):
             - tuple(distances, indices) for the k neighbors for each point.
         """
         if self.dist_metric is DistanceMetric.EUCLIDEAN:
-            distances = np.array([self._euclidean(query, point) for point in self.X])
+            distance_func = _jit_euclidean if self.jit_compilation else self._euclidean
         elif self.dist_metric is DistanceMetric.MANHATTAN:
-            distances = np.array([self._manhattan(query, point) for point in self.X])
+            distance_func = _jit_manhattan if self.jit_compilation else self._manhattan
         else:
             raise ValueError(f'Unsupported distance metric: {self.dist_metric}')
 
-        # Find indices of k smallest distances
+        distances = np.array([distance_func(query, point) for point in self.X])
+
+        # find indices of k smallest distances
         indices = np.argsort(distances)[:self.k]
         return distances[indices], indices
     
