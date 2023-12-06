@@ -8,3 +8,5 @@ seaborn
 plotly
 yellowbrick
 numba
+ipykernel
+nbformat
