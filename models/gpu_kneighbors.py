@@ -122,10 +122,6 @@ class GpuKNeighbors:
         # move the results back to the host
         h_distances = d_distances.copy_to_host()
 
-        print(f'\nGpuKNN(dist_metric={self.dist_metric}), first k={self.k} unsorted distances:')
-        for i in range(min(self.k, len(h_distances))):
-            print(f'Distance {i}: {h_distances[i]}')
-
         # use np.argsort to find the indices of the k nearest neighbors
         indices = np.argsort(h_distances)[:self.k]
 
