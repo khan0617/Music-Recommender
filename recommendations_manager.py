@@ -57,7 +57,6 @@ class RecommendationsManager:
         Each row of recommended_songs must have all the columns necessary to create a Song object.
         """
         seen_songs = set([query_name.lower()])
-        print(f'{query_name = }')
         songs: list[Song] = []
         order_map = {}  # we'll need to maintain order after resolving the futures
 
@@ -86,24 +85,43 @@ class RecommendationsManager:
 
         return songs
     
-    def _get_classifier_results(self, data_copy: pd.DataFrame, normalized_data: pd.DataFrame, query: np.ndarray, k: int) -> list[Song]:
+    def _get_knn_results(self, data_copy: pd.DataFrame, normalized_data: pd.DataFrame, query: np.ndarray, k: int) -> list[Song]:
         """
-        Given a song's acoustic features, run it thorugh our classifier, and get the k recommendations.
+        Given a song's acoustic features, run it thorugh our CPU knn classifier, and get the k recommendations.
         """
-        clf = self.classifier(k, self.dist_metric)
+        clf = MyKNeighborsClassifier(k, self.dist_metric, jit_compilation=False)
         clf.fit(normalized_data)
         distances, indices = clf.predict(query)
         recommended_songs = data_copy.iloc[indices]
+        query_name: str = data_copy.iloc[-1]['name']
 
-        # debugging console output
+        self._print_classifier_results(data_copy, recommended_songs)
+        return self._convert_df_to_songs(recommended_songs, query_name)
+    
+    def _get_gpu_knn_results(self, data_copy: pd.DataFrame, normalized_data: pd.DataFrame, query: np.ndarray, k: int) -> list[Song]:
+        """
+        Given a song's acoustic features, run it thorugh our GPU knn classifier, and get the k recommendations.
+        """
+        clf = GpuKNeighbors(k, self.dist_metric)
+        clf.fit(normalized_data)
+        distances, indices = clf.predict(query)
+        recommended_songs = data_copy.iloc[indices]
+        query_name: str = data_copy.iloc[-1]['name']
+
+        self._print_classifier_results(data_copy, recommended_songs)
+        return self._convert_df_to_songs(recommended_songs, query_name)
+    
+    def _print_classifier_results(self, data_copy: pd.DataFrame, recommended_songs: pd.DataFrame) -> None:
+        """
+        Print the classifier results for debugging purposes.
+        """
         query_name: str = data_copy.iloc[-1]['name']
         query_artist: str = ast.literal_eval(data_copy.iloc[-1]['artists'])[0]
-        print(f'\nKNN Recommended Songs for {query_name} by {query_artist}:')
+        print(f'\n{self.classifier.__name__} Recommended Songs for {query_name} by {query_artist}:')
         for index in range(len(recommended_songs)):
             song_name = recommended_songs['name'].iloc[index]
             artist = ast.literal_eval(recommended_songs['artists'].iloc[index])[0]
             print(f'{index + 1}. {song_name} by {artist}')
-        return self._convert_df_to_songs(recommended_songs, query_name)
     
     def get_recommendations(self, query: Song, num_recommendations: int = 5) -> list[Song]:
         """
@@ -116,20 +134,30 @@ class RecommendationsManager:
         normalized_data = self._normalize_data(data_copy[self.features])
         normalized_query_record: np.ndarray = normalized_data[-1]
 
-        # TODO: add gpu_knn functionality and split up this conditional as needed
-        if self.classifier in [MyKNeighborsClassifier, GpuKNeighbors]:
-            songs = self._get_classifier_results(
+        songs: list[Song] = None
+        if self.classifier == MyKNeighborsClassifier:
+            songs = self._get_knn_results(
                 data_copy=data_copy,
                 normalized_data=normalized_data,
                 query=normalized_query_record,
                 k=num_recommendations
             )
-            logger.info(
-                f'get_recommendations(classifier=knn, query={query.song_name}), returning {json.dumps([s.to_dict() for s in songs], indent=4)}'
+        elif self.classifier == GpuKNeighbors:
+            songs = self._get_gpu_knn_results(
+                data_copy=data_copy,
+                normalized_data=normalized_data,
+                query=normalized_query_record,
+                k=num_recommendations,
             )
-            return songs
         else:
             raise ValueError(f'Invalid classifier {self.classifier}!')
+        
+        logger.info(
+            f'get_recommendations(classifier={self.classifier.__name__}, query={query.song_name}), returning {json.dumps([s.to_dict() for s in songs], indent=4)}'
+        )
+
+        return songs
+
 
 # test code, see if it works
 if __name__ == '__main__':

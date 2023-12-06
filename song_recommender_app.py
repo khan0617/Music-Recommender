@@ -28,9 +28,7 @@ def init() -> None:
     print('Done.\nInitializing spotify_manager...', end='')
     spotify_manager = SpotifyManager()
 
-    # TODO: update this to use the classifier for GPU if available
-    # classifier = GpuKNeighbors if cuda.is_available() else MyKNeighborsClassifier
-    classifier = MyKNeighborsClassifier if cuda.is_available() else MyKNeighborsClassifier
+    classifier = GpuKNeighbors if cuda.is_available() else MyKNeighborsClassifier
     print(f'Done.\nInitializing recommendations_manager...', end='')
     recommendations_manager = RecommendationsManager(
         data=data, 
@@ -73,10 +71,11 @@ def recommendations():
     from_autocomplete = request.args.get('fromAutocomplete', 'false') == 'true'
     gpu_enabled = request.args.get('gpuEnabled', 'false') == 'true'
 
-    if gpu_enabled and type(recommendations_manager.classifier) is not GpuKNeighbors:
-        pass
-        # TODO: uncomment this once GpuKneighbors is done
-        # recommendations_manager.classifier = GpuKNeighbors
+    # make sure we run on the correct model
+    if gpu_enabled:
+        recommendations_manager.classifier = GpuKNeighbors
+    else:
+        recommendations_manager.classifier = MyKNeighborsClassifier
 
     # if the request was made with autocomplete, we know the input will be: '{song_name} by {artist}'
     if from_autocomplete:
