@@ -1,8 +1,11 @@
 # Music-Recommender
 ### A similar song finder using KNearestNeighbors, Flask, the Spotify API, and CUDA acceleration.
-A web-interface to search for songs you like, and get up to 5 recommendations. The application forwards your search to Spotify, then uses a custom KNearestNeighbors classifier to retrieve the most similar songs from a local dataset of ~170,000 songs. The recommendations are not constrained to be the same genre as the query. The CUDA acceleration is being actively developed using [numba](https://numba.pydata.org/).
+A web-interface to search for songs you like, and get up to 5 recommendations. The application forwards your search to Spotify, then uses a custom KNearestNeighbors classifier to retrieve the most similar songs from a local dataset of ~170,000 songs. The recommendations are not constrained to be the same genre or artist as the query. Both CUDA GPU acceleration and CPU just-in-time compilation were implemented using [numba](https://numba.pydata.org/).
 
 ![Song Recommender](./music_recommender_screenshot.png)
+
+# Speedup Results
+TODO
 
 # Before Starting
 Important notes:
@@ -21,6 +24,7 @@ Important notes:
 
 # Usage
 1. Install dependencies for the flask app and jupyter notebook: `pip install -r requirements.txt`
+    - If you installed the cuda toolkit using conda, be sure to install these dependencies inside the `music_recommender` env you should've created.
 2. Launch the Flask app on localhost:5000: `python song_recommender_app.py` (you may need to use `python3` depending on your install).
     - Application logs are generated in `app.log` in the same directory as `song_recommender_app.py`.
 3. Go to http://localhost:5000 in the browser. You should be able to search now!
@@ -37,7 +41,7 @@ Important notes:
     - `my_k_neighbors_classifier.py`: Implements KNN from scratch via `class MyKNeighborsClassifier`, allowing either euclidean or manhattan distance metrics.
 - `recommendations_manager.py`: Implements `class RecommendationsManager`, responsible for taking a query from the user and resolving its recommendations.
 - `requirements.txt`: Necessary dependencies to run the flask app and the jupyter notebook.
-- `song_recommender_app.py`: The main flask app. Uses the flask development server to server the application to https://localhost:5000. Prints debug information to the terminal too.
+- `song_recommender_app.py`: The main flask app. Uses the flask development server to serve the application to http://localhost:5000. Prints debug information to the terminal too.
 - `song_recommender_exploration.ipynb`: Exploration of the music dataset. Provides visualizations to understand the data, and tests out various KNN implementations. Useful for seeing how different algorithms or distance metrics can provide different recommendations.
 - `song.py`: Class to represent Song metadata and audio features.
 - `spotify_manager.py`: Wrapper class for calls to the Spotify API using spotipy.
