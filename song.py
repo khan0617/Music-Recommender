@@ -8,7 +8,7 @@ from logging_config import setup_logging
 setup_logging()
 logger = logging.getLogger()
 
-@dataclass()
+@dataclass
 class Song:
     """Represents a song and its music features, obtained from the Spotify API."""
     artist_name: str
