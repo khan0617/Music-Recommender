@@ -1,7 +1,7 @@
 import math
 import numpy as np
 from .distance_metric import DistanceMetric
-from numba import cuda, void, float64, int32
+from numba import cuda, types
 
 THREADS_PER_BLOCK = 256
 
@@ -9,7 +9,14 @@ THREADS_PER_BLOCK = 256
 # numba requires that constant memory is allocated in a cuda.jit() function.
 QUERY: cuda.devicearray.DeviceNDArray = None
 
-@cuda.jit(device=True)
+@cuda.jit(
+    types.float64(
+        types.Array(types.float64, 1, 'C', readonly=True, aligned=True),  # Query array
+        types.Array(types.float64, 1, 'A', readonly=False, aligned=True), # Point array
+        types.int64                                                 # Number of features
+    ),
+    device=True
+)
 def _gpu_euclidean(
     query: cuda.devicearray.DeviceNDArray, 
     point: cuda.devicearray.DeviceNDArray, 
@@ -24,7 +31,14 @@ def _gpu_euclidean(
         sum += diff * diff
     return math.sqrt(sum)
 
-@cuda.jit(device=True)
+@cuda.jit(
+    types.float64(
+        types.Array(types.float64, 1, 'C', readonly=True, aligned=True),  # Query array
+        types.Array(types.float64, 1, 'A', readonly=False, aligned=True), # Point array
+        types.int64                                                       # Number of features
+    ),
+    device=True
+)
 def _gpu_manhattan(
     query: cuda.devicearray.DeviceNDArray, 
     point: cuda.devicearray.DeviceNDArray, 
@@ -54,7 +68,7 @@ def distance_kernel(
     - num_features: number of features per song
     - dist_metric: distance metric (0 for Euclidean, 1 for Manhattan)
     """
-    query_c = cuda.const.array_like(QUERY) # query is stored in cached constant memory
+    query_c = cuda.const.array_like(QUERY) # query_c is stored in cached constant memory
     idx = cuda.grid(1)
     if idx < num_songs:
         point = data[idx * num_features : (idx + 1) * num_features]
@@ -98,7 +112,7 @@ class GpuKNeighbors:
 
         # move data to the GPU
         d_data = cuda.to_device(self.X)
-        d_distances = cuda.device_array(num_songs, dtype=np.float32)
+        d_distances = cuda.device_array(num_songs, dtype=np.float64)
 
         # launch the kernel then synchronize
         num_blocks = (num_songs + THREADS_PER_BLOCK - 1) // THREADS_PER_BLOCK
