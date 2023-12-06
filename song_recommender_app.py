@@ -28,7 +28,11 @@ def init() -> None:
     print('Done.\nInitializing spotify_manager...', end='')
     spotify_manager = SpotifyManager()
 
-    classifier = GpuKNeighbors if cuda.is_available() else MyKNeighborsClassifier
+    try:
+        classifier = GpuKNeighbors if cuda.is_available() else MyKNeighborsClassifier
+    except Exception as e:
+        classifier = MyKNeighborsClassifier
+
     print(f'Done.\nInitializing recommendations_manager...', end='')
     recommendations_manager = RecommendationsManager(
         data=data, 
@@ -40,7 +44,10 @@ def init() -> None:
 
 @app.route('/')
 def home():
-    cuda_available = cuda.is_available()
+    try:
+        cuda_available = cuda.is_available()
+    except Exception as e:
+        cuda_available = False
     return render_template('index.html', cuda_available=cuda_available)
 
 @app.route('/autocomplete')
