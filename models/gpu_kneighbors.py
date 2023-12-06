@@ -107,11 +107,8 @@ class GpuKNeighbors:
         num_features = self.X.shape[1]
         dist_metric = 0 if self.dist_metric is DistanceMetric.EUCLIDEAN else 1
 
-        # Flatten the dataset to a 1D array for GPU processing
-        self.X = self.X.ravel()
-
         # move data to the GPU
-        d_data = cuda.to_device(self.X)
+        d_data = cuda.to_device(self.X.ravel())
         d_distances = cuda.device_array(num_songs, dtype=np.float64)
 
         # launch the kernel then synchronize
