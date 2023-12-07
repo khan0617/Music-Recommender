@@ -28,6 +28,8 @@ Important notes:
 2. Launch the Flask app on localhost:5000: `python song_recommender_app.py` (you may need to use `python3` depending on your install).
     - Application logs are generated in `app.log` in the same directory as `song_recommender_app.py`.
 3. Go to http://localhost:5000 in the browser. You should be able to search now!
+    - If the GPU setup and cuda install worked, the toggle should be available, otherwise it will be grayed-out.
+    - The "Distance Metric" toggle allows you to switch between different KNN distance metrics to get different results.
 
 # Files
 - `data/`: Stores all `.csv` for the local database. The main one is `data.csv`.
