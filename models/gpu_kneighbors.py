@@ -88,7 +88,7 @@ class GpuKNeighbors:
         self.X = X
         self.y = y
 
-    def predict(self, query: np.ndarray) -> tuple[list[np.ndarray], list[np.ndarray]]:
+    def predict(self, query: np.ndarray) -> tuple[list[float], list[int]]:
         """
         Find the k nearest neighbors. Compare a single query point to every point in the dataset.
 

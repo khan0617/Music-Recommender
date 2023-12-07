@@ -15,5 +15,5 @@ class KnnSongClassifier(ABC):
         raise NotImplementedError
     
     @abstractmethod
-    def predict(self, query: np.ndarray) -> tuple[list[np.ndarray], list[np.ndarray]]:
+    def predict(self, query: np.ndarray) -> tuple[list[float], list[int]]:
         raise NotImplementedError
