@@ -52,8 +52,8 @@ function adjustSuggestionsWidth() {
     suggestionsContainer.style.width = inputWidth + 48 + 'px';
 }
 
-// initiate a getRecommendations request for the specified song.
 /**
+ * Initiate request a list of recommendations for this query from the app's backend.
  * @param {string} songQuery - The query, like 'Forever Young by BLACKPINK'.
  * @param {boolean} fromAutocomplete - let the backend know we are looking for a recommendation that is part of the database
  */
@@ -61,7 +61,11 @@ function getRecommendations(songQuery, fromAutocomplete = false) {
     if (songQuery) {
         console.log(`Called getRecommendations(songQuery=${songQuery}, fromAutocomplete=${fromAutocomplete})!`);
         let gpuEnabled = document.getElementById('gpuToggle').checked; // Get the state of the GPU toggle
-        let url = '/recommendations?query=' + encodeURIComponent(songQuery) + '&gpuEnabled=' + gpuEnabled;
+        let distanceMetric = document.getElementById('distanceToggle').value;
+        let url = '/recommendations?query=' + encodeURIComponent(songQuery) 
+                  + '&gpuEnabled=' + gpuEnabled 
+                  + '&distanceMetric=' + distanceMetric;
+
         if (fromAutocomplete) {
             url += '&fromAutocomplete=true';
         }

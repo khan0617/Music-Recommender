@@ -70,6 +70,61 @@ body {
     color: gray;
 }
 
+/* Styling for the Distance Select Element (euclidean vs manhattan) */
+/* Custom styles for enhancing the dropdown arrow visibility */
+.form-select.bg-dark {
+    -webkit-appearance: none;  /* Removes default webkit styles */
+    -moz-appearance: none;     /* Removes default Mozilla styles */
+    appearance: none;          /* Removes default styles (for IE) */
+    background-image: url('data:image/svg+xml;charset=US-ASCII,<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill="%23ffffff" d="M5 8l5 5 5-5z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 16px 12px;
+    border-radius: 0.25rem; /* Rounded corners */
+    box-shadow: none; /* Remove default box-shadow */
+}
+
+/* Style for the select element when it's focused */
+.form-select.bg-dark:focus {
+    border-color: #198754; /* Color when the select element is focused */
+    box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.25); /* Glow effect to match the focused search box */
+}
+
+/* Styling for the Distance Metric label */
+.distance-label {
+    color: white; /* White text color for visibility */
+    font-size: 1.5em;
+    font-weight: bold; /* Make the label text bold */
+    vertical-align: middle; /* Align the label vertically with the select box */
+    display: inline-block; /* Inline-block for proper positioning */
+    margin-right: 8px; /* Right margin for spacing between label and select box */
+    white-space: nowrap; /* Prevents wrapping of text */
+}
+
+/* Styling for the Distance Toggle Container */
+.distance-toggle-container {
+    display: flex; /* Aligns label and select side by side */
+    align-items: center; /* Centers items vertically */
+    justify-content: center; /* Centers the flex container */
+    margin-top: 1em; /* Top margin for spacing */
+    width: auto;
+    max-width: fit-content;
+    margin: auto;
+}
+
+.bg-dark {
+    background-color: #343a40; /* Dark background color */
+}
+
+.text-white {
+    color: white; /* White text color */
+}
+
+.border-dark {
+    border-color: #343a40; /* Dark border color */
+}
+
+
 /* Custom styles for the search bar and suggestions */
 .search-container {
     width: 100%;

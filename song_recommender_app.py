@@ -4,6 +4,7 @@ from flask import Flask, render_template, jsonify, request
 from logging_config import setup_logging
 from models.gpu_kneighbors import GpuKNeighbors
 from models.my_k_neighbors_classifier import MyKNeighborsClassifier
+from models.distance_metric import DistanceMetric
 from trie import Trie
 from spotify_manager import SpotifyManager
 from song import Song
@@ -71,12 +72,20 @@ def recommendations():
     Return the search recommendations for this song, as an html string.
     Returns empty html string if we don't get any results.
     An example GET request could look like:
-        "/recommendations?query=your_song_name&gpuEnabled=true&fromAutocomplete=false
+        "/recommendations?query=your_song_name&gpuEnabled=true&distanceMetric=euclidean&fromAutocomplete=false
     """
     query = request.args.get('query', '')
     artist_name = None
     from_autocomplete = request.args.get('fromAutocomplete', 'false') == 'true'
     gpu_enabled = request.args.get('gpuEnabled', 'false') == 'true'
+    dist_metric = request.args.get('distanceMetric', 'euclidean')
+
+    if dist_metric == 'euclidean':
+        recommendations_manager.dist_metric = DistanceMetric.EUCLIDEAN
+    elif dist_metric == 'manhattan':
+        recommendations_manager.dist_metric = DistanceMetric.MANHATTAN
+    else:
+        app.logger.warning(f'Unexpected distance metric in recommendations(): {dist_metric}')
 
     # make sure we run on the correct model
     if gpu_enabled:
@@ -88,7 +97,7 @@ def recommendations():
     if from_autocomplete:
         query, artist_name = query.rsplit('by', 1)
 
-    print(f'recommendations({query=}, {artist_name=}, {gpu_enabled=}) called!')
+    print(f'recommendations({query=}, {artist_name=}, {gpu_enabled=}, {dist_metric=}) called!')
 
     if query and (song := spotify_manager.search_song(song_name=query, artist_name=artist_name)):
         recommendations: list[Song] = recommendations_manager.get_recommendations(song, num_recommendations=10)[:5]
