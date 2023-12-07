@@ -95,7 +95,7 @@ class RecommendationsManager:
         recommended_songs = data_copy.iloc[indices]
         query_name: str = data_copy.iloc[-1]['name']
 
-        self._print_classifier_results(data_copy, recommended_songs)
+        self._print_classifier_results(data_copy, recommended_songs, distances)
         return self._convert_df_to_songs(recommended_songs, query_name)
     
     def _get_gpu_knn_results(self, data_copy: pd.DataFrame, normalized_data: pd.DataFrame, query: np.ndarray, k: int) -> list[Song]:
@@ -108,20 +108,32 @@ class RecommendationsManager:
         recommended_songs = data_copy.iloc[indices]
         query_name: str = data_copy.iloc[-1]['name']
 
-        self._print_classifier_results(data_copy, recommended_songs)
+        self._print_classifier_results(data_copy, recommended_songs, distances)
         return self._convert_df_to_songs(recommended_songs, query_name)
     
-    def _print_classifier_results(self, data_copy: pd.DataFrame, recommended_songs: pd.DataFrame) -> None:
+    def _print_classifier_results(self, data_copy: pd.DataFrame, recommended_songs: pd.DataFrame, distances: list[float]) -> None:
         """
         Print the classifier results for debugging purposes.
         """
         query_name: str = data_copy.iloc[-1]['name']
         query_artist: str = ast.literal_eval(data_copy.iloc[-1]['artists'])[0]
-        print(f'\n{self.classifier.__name__} Recommended Songs for {query_name} by {query_artist}:')
+        print(f'\n{self.classifier.__name__}(dist_metric={self.dist_metric}) Recommended Songs for {query_name} by {query_artist}:')
+
+        # build a list of '{song} by {artist}' strings
+        song_artist_list: list[str] = []
         for index in range(len(recommended_songs)):
             song_name = recommended_songs['name'].iloc[index]
             artist = ast.literal_eval(recommended_songs['artists'].iloc[index])[0]
-            print(f'{index + 1}. {song_name} by {artist}')
+            song_artist_list.append(f'{song_name} by {artist}')
+
+        # get the maximum length for song-artist string
+        max_length = max(len(song_artist) for song_artist in song_artist_list)
+
+        # print results with padding
+        for index, song_artist in enumerate(song_artist_list):
+            formatted_song = song_artist.ljust(max_length)
+            print(f'{index + 1}. {formatted_song} distance: {distances[index]:.4f}')
+
     
     def get_recommendations(self, query: Song, num_recommendations: int = 5) -> list[Song]:
         """
