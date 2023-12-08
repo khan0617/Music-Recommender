@@ -5,7 +5,8 @@ A web-interface to search for songs you like, and get up to 5 recommendations. T
 ![Song Recommender](./music_recommender_screenshot.png)
 
 # Speedup Results
-TODO
+We observe about a 40x speedup using GPU for computation, and a 10x speedup using JIT compilation!
+![Execution Times](./execution_times.png)
 
 # Before Starting
 Important notes:
