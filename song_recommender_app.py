@@ -2,7 +2,10 @@ import pandas as pd
 from numba import cuda
 from flask import Flask, render_template, jsonify, request
 from logging_config import setup_logging
-from models.gpu_kneighbors import GpuKNeighbors
+try:
+    from models.gpu_kneighbors import GpuKNeighbors
+except Exception as e:
+    pass
 from models.my_k_neighbors_classifier import MyKNeighborsClassifier
 from models.distance_metric import DistanceMetric
 from trie import Trie

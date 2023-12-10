@@ -8,7 +8,10 @@ from typing import Type
 from sklearn.preprocessing import MinMaxScaler
 from spotify_manager import SpotifyManager
 from models.my_k_neighbors_classifier import MyKNeighborsClassifier
-from models.gpu_kneighbors import GpuKNeighbors
+try:
+    from models.gpu_kneighbors import GpuKNeighbors
+except Exception as e:
+    pass
 from models.knn_song_classifier import KnnSongClassifier
 from models.distance_metric import DistanceMetric
 from logging_config import setup_logging
