@@ -10,24 +10,32 @@ We observe about a 40x speedup using GPU for computation, and a 10x speedup usin
 
 # Before Starting
 Important notes:
-1. The system was developed and tested using python 3.11 on Windows.
-2. You will need to provide your own Spotify API login credentials
+1. The system was developed and tested using python 3.11 on both Windows 11 and Ubuntu 22.04.
+2. To use the web-interface, you'll need to provide your own Spotify API login credentials
     - Go to https://developer.spotify.com/documentation/web-api, and get your `client_id` and `client_secret`. You can set the redirect url to `http://localhost/`
     - Create `spotify_credentials.txt` in the same folder as `spotify_manager.py`. The file should be a single line formatted as such: `client_id client_secret` (separated by a space). `SpotifyManager` reads these and loads them into `os.environ`.
 3. To get the GPU acceleration toggle functioning, you likely need to install the [CUDA toolkit](https://developer.nvidia.com/cuda-toolkit) from NVIDIA.
     - If you prefer to install using conda, you can do: `conda install cuda -c nvidia` (see [Installing CUDA using Conda](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html#conda-installation))
     - Make sure your GPU driver is up to date (via GeForce Experience or NVIDIA directly.)
+4. You don't need to install `cudatoolkit` unless you want to try the GPU. The system still works without it, the 'GPU' accelration toggle will just be unavailable. 
 
 #### Using conda, these are the exact steps that worked for me on an RTX 3050Ti Laptop:
 - Download latest GPU driver using GeForce Experience
-- Make a new conda env: `conda create -n music_recommender`
+- Create and activate a new conda env: 
+    ```
+    conda create -n music_recommender
+    conda activate music_recommender
+    ```
 - Install CUDA toolkit: `conda install cuda -c nvidia`
 
 # Usage
 1. Install dependencies for the flask app and jupyter notebook: `pip install -r requirements.txt`
     - If you installed the cuda toolkit using conda, be sure to install these dependencies inside the `music_recommender` env you should've created.
-2. Launch the Flask app on localhost:5000: `python song_recommender_app.py` (you may need to use `python3` depending on your install).
+3. After installing dependencies in your environment, you should be able to run the cells in the jupyter notebook `song_recommender_exploration.ipynb`.
+    - The notebook showcases data exploration, graphs, and performance comparisons between models.
+2. To use the web-interface, launch the Flask app on localhost:5000: `python song_recommender_app.py` (you may need to use `python3` depending on your install).
     - Application logs are generated in `app.log` in the same directory as `song_recommender_app.py`.
+    - It may take a bit to initialize the system due to populating the Trie with 170,000 songs. Once you see "Go to localhost:5000 to start searching!" in the terminal it's ready.
 3. Go to http://localhost:5000 in the browser. You should be able to search now!
     - If the GPU setup and cuda install worked, the toggle should be available, otherwise it will be grayed-out.
     - The "Distance Metric" toggle allows you to switch between different KNN distance metrics to get different results.
