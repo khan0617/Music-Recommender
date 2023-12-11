@@ -17,7 +17,8 @@ Important notes:
 3. To get the GPU acceleration toggle functioning, you likely need to install the [CUDA toolkit](https://developer.nvidia.com/cuda-toolkit) from NVIDIA.
     - If you prefer to install using conda, you can do: `conda install cuda -c nvidia` (see [Installing CUDA using Conda](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html#conda-installation))
     - Make sure your GPU driver is up to date (via GeForce Experience or NVIDIA directly.)
-4. You don't need to install `cudatoolkit` unless you want to try the GPU. The system still works without it, the 'GPU' accelration toggle will just be unavailable. 
+    - Only works with NVIDIA GPUs.
+4. The system still works without `cudatoolkit`, the 'GPU' acceleration toggle will just be unavailable. 
 
 #### Using conda, these are the exact steps that worked for me on an RTX 3050Ti Laptop:
 - Download latest GPU driver using GeForce Experience
