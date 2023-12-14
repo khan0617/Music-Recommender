@@ -6,6 +6,8 @@ A web-interface to search for songs you like, and get up to 5 recommendations. T
 
 # Speedup Results
 We observe about a 40x speedup using GPU for computation, and a 10x speedup using JIT compilation!
+
+For an even faster CUDA/C++ KNN (**450x speedup!**), see: https://github.com/khan0617/GPU-Accelerated-KNN
 ![Execution Times](./execution_times.png)
 
 # Before Starting
@@ -71,3 +73,5 @@ GitHub SVG: [iconmonstr](https://iconmonstr.com/github-1-svg/)
 Favicon: [flaticon](https://www.flaticon.com/free-icon/spotify_3781901)
 
 CSS framework: [Bootstrap](https://getbootstrap.com/)
+
+Dataset: [Kaggle](https://www.kaggle.com/datasets/vatsalmavani/spotify-dataset)
