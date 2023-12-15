@@ -2,13 +2,13 @@
 ### A similar song finder using KNearestNeighbors, Flask, the Spotify API, and CUDA acceleration.
 A web-interface to search for songs you like, and get up to 5 recommendations. The application forwards your search to Spotify, then uses a custom KNearestNeighbors classifier to retrieve the most similar songs from a local dataset of ~170,000 songs. The recommendations are not constrained to be the same genre or artist as the query. Both CUDA GPU acceleration and CPU just-in-time compilation were implemented using [numba](https://numba.pydata.org/).
 
-![Song Recommender](./music_recommender_screenshot.png)
+![Song Recommender](./screenshots/music_recommender_screenshot.png)
 
 # Speedup Results
 We observe about a 40x speedup using GPU for computation, and a 10x speedup using JIT compilation!
 
 For an even faster CUDA/C++ KNN (**450x speedup!**), see: https://github.com/khan0617/GPU-Accelerated-KNN
-![Execution Times](./execution_times.png)
+![Execution Times](./screenshots/execution_times.png)
 
 # Before Starting
 Important notes:
