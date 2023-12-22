@@ -61,6 +61,9 @@ Important notes:
 - `spotify_manager.py`: Wrapper class for calls to the Spotify API using spotipy.
 - `trie.py`: Implements a custom Trie datastructure to implement autocomplete on the web interface. The Trie is loaded with the song names from `data.csv`.
 
+# Video Demo
+https://github.com/khan0617/Music-Recommender/assets/92604117/d179458a-2079-4bd3-bf6a-3b0a52d2f5af
+
 ## Resources
 GPU SVG: gpu by Misha Petrishchev from <a href="https://thenounproject.com/browse/icons/term/gpu/" target="_blank" title="gpu Icons">Noun Project</a> (CC BY 3.0)
 
