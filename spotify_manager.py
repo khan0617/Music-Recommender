@@ -14,10 +14,10 @@ class SpotifyManager:
         self._sp = self._get_spotify_api_client()
 
     @staticmethod
-    def _load_spotify_credentials(filename: str) -> tuple[str, str]:
+    def _load_spotify_credentials(filename: str) -> None:
         """
         Extract client_id, client_secret Spotify API credentials from the specified file.
-        Load them into environment variables as SPOTIPY_CLIENT_ID and SPOTIPY_CLIENT_SECRET.
+        Load them into the SPOTIPY_CLIENT_ID and SPOTIPY_CLIENT_SECRET environment variables.
         """
         with open(filename, 'r') as f:
             client_id, client_secret = f.read().strip().split()
